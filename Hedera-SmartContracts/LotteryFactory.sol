@@ -27,17 +27,19 @@ contract LotteryFactory {
     
     }
 
-    function deployLotteryContract(uint miniumAmount, uint lotteryTypeVal, string memory name, string memory description)
+    function deployLotteryContract(uint miniumAmount, uint lotteryTypeVal, string memory name, string memory description,string memory linkCreator,uint feesCreator)
     public payable returns(address ,string memory,string memory,address)
     {
-
+        require(feesCreator<=5);
         LotteryContract newLottery = new LotteryContract(
             msg.sender,
             miniumAmount,
             lotteryTypeVal,//0 money 1 prizes
             name,
             description,
+            linkCreator,
             percentageFees,
+            feesCreator,
             adminAddr
         );
         address addr = address(newLottery);
