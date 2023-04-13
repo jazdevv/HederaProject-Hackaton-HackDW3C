@@ -2,7 +2,7 @@ import { useState } from "react";
 import LoginWalletModal from "../components/loginWalletModal";
 import { HashConnect } from 'hashconnect';
 import { Outlet } from "react-router";
-import useWalletUser from '../components/useWalletUser';
+import useWalletUser from '../hooks/useWalletUser';
 import Header from "../components/header";
 
 function WalletConnect() {
@@ -66,7 +66,9 @@ function WalletConnect() {
     return <>
         {loginWalletModal}
         <Header/>
-        <Outlet/>
+        <div className="gris w-full h-full">
+            <Outlet/>   
+        </div>
     </>  
 }
 

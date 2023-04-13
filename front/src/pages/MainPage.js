@@ -1,7 +1,7 @@
 
 function MainPage(){
 
-    return <div className="bg-gray-200 w-full h-full">MainPage</div>
+    return <div className="">MainPage</div>
 }
 
 export default MainPage;

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import useWalletUser from "../components/useWalletUser";
+import useWalletUser from "../hooks/useWalletUser";
 import { IoIosArrowDropdownCircle,IoIosArrowDropleftCircle  } from "react-icons/io";
 import { useState } from "react";
 
@@ -16,16 +16,18 @@ function Header(){
     console.log(walletUser)
     return <div className="flex flex-col w-full">
         <div className={`header h-12 w-full ${degradiant}`}>
-            <div className="blue text-white text-md font-bold">
+            <div className=" text-white text-md font-bold">
                 Create Lotteries and Raffles or Participate and win amazing prizes!
             </div>
         </div>
-        <div className=" md:h-16 bg-gray-200 justify-between w-full flex flex-col md:flex-row py-4 md:py-0 gap-4 md:gap-0 border-b-2 pb-2 border-gray-300">
+        <div className=" md:h-16 gris justify-between w-full flex flex-col md:flex-row py-4 md:py-0 gap-4 md:gap-0 border-b-2 pb-2 border-gray-800">
             
             <div className="flex content-center px-4 md:pl-10 gap-2 md:gap-6 grow py-2">
-                <div className="p-2 self-center text-blue-600 text-white text-xl font-bold">
-                CryptoLotto
-                </div>
+                <Link to='/'>
+                    <div className="p-2 self-center text-blue-600  text-xl font-bold">
+                    CryptoLotto
+                    </div>
+                </Link>
                 <div className="flex content-center w-3/4">
                     <div className="self-center text-gray-700 font-md font-bold rounded w-full">
                         <div className="flex flex-col w-full">
@@ -54,13 +56,13 @@ function Header(){
                 </Link>
                 <Link to="/newRuffle" className="flex content-center">
                     <div className="p-2 self-center bg-blue-600 text-white text-md font-bold hover:bg-blue-800">
-                        Create ruffle
+                        Create raffle
                     </div>
                 </Link>
                 <div onClick={onClick} className="flex content-center relative cursor-pointer">
                     <div className="p-2 self-center bg-gray-500 text-gray-900 font-md font-bold rounded flex content-center gap-1 w-full justify-end hover:bg-gray-400">
                         wallet {walletUser.pairedAccounts[0]}
-                        {openDropdown ? <svg className="my-auto" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm289.1-43.4c7.5-7.5 19.8-7.5 27.3 0 3.8 3.8 5.6 8.7 5.6 13.6s-1.9 9.9-5.7 13.7l-94.3 94c-7.6 6.9-19.3 6.7-26.6-.6l-95.7-95.4c-7.5-7.5-7.6-19.7 0-27.3 7.5-7.5 19.7-7.6 27.3 0l81.1 81.9 81-79.9z"></path></svg>:<svg className="my-auto" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M256 48C141.1 48 48 141.1 48 256s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48zm43.4 289.1c7.5 7.5 7.5 19.8 0 27.3-3.8 3.8-8.7 5.6-13.6 5.6s-9.9-1.9-13.7-5.7l-94-94.3c-6.9-7.6-6.7-19.3.6-26.6l95.4-95.7c7.5-7.5 19.7-7.6 27.3 0 7.5 7.5 7.6 19.7 0 27.3l-81.9 81 79.9 81.1z"></path></svg>}
+                        {openDropdown ? <svg className="my-auto" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm289.1-43.4c7.5-7.5 19.8-7.5 27.3 0 3.8 3.8 5.6 8.7 5.6 13.6s-1.9 9.9-5.7 13.7l-94.3 94c-7.6 6.9-19.3 6.7-26.6-.6l-95.7-95.4c-7.5-7.5-7.6-19.7 0-27.3 7.5-7.5 19.7-7.6 27.3 0l81.1 81.9 81-79.9z"></path></svg>:<svg className="my-auto" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M256 48C141.1 48 48 141.1 48 256s93.1 208 208 208 208-93.1 208-208S370.9 48 256 48zm43.4 289.1c7.5 7.5 7.5 19.8 0 27.3-3.8 3.8-8.7 5.6-13.6 5.6s-9.9-1.9-13.7-5.7l-94-94.3c-6.9-7.6-6.7-19.3.6-26.6l95.4-95.7c7.5-7.5 19.7-7.6 27.3 0 7.5 7.5 7.6 19.7 0 27.3l-81.9 81 79.9 81.1z"></path></svg>}
                     </div>                        
    
                     {openDropdown && <div className="absolute top-12 w-full bg-blue flex flex-col gap-2 bg-gray-500 text-gray-900 font-lg font-bold rounded ">

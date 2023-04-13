@@ -2,8 +2,9 @@ import {createBrowserRouter } from "react-router-dom";
 import WalletConnect from './pages/WalletConnect';
 import MainPage from "./pages/MainPage";
 import CreateLottery from "./pages/CreateLotteryPage";
-import CreateRaffles from "./pages/cretedRafflesPage";
-import ParticipationsPage from "./pages/walletParticipationsPage";
+import CreateRaffles from "./pages/CreateRafflePage";
+import ParticipationsPage from "./pages/WalletParticipationsPage";
+import ContractPage from "./pages/ContractPage";
 
 // REACT ROUTER
 const router = createBrowserRouter([
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
         {
           path:"/wallet/participations",
           element:<ParticipationsPage/>
+        },
+        {
+          path: "/contract/:ontractid",
+          element: <ContractPage/>
         }
       ]
     }
