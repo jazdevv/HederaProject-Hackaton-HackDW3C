@@ -5,6 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./Lottery.sol";
 
 contract LotteryFactory {
+
     //lottery factory admin
     uint public percentageFees;
     address public adminAddr;
@@ -12,7 +13,12 @@ contract LotteryFactory {
 
     //created lotteries
     address[] public createdLoteries;
-    
+    //contracts of created Lotteries of every User
+    mapping(address=>createdContract[]) userContracts;
+    struct createdContract {
+        address contractAddress;
+        string name;
+    }
     // struct LotteryData{
     //     address addr;
     //     string name;
@@ -28,9 +34,17 @@ contract LotteryFactory {
     }
 
     function deployLotteryContract(uint miniumAmount, uint lotteryTypeVal, string memory name, string memory description,string memory linkCreator,uint feesCreator)
-    public payable returns(address ,string memory,string memory,address)
+    public payable returns(address)
     {
-        require(feesCreator<=5);
+        if(lotteryTypeVal==0){
+            require(feesCreator<=5);
+        }else if(lotteryTypeVal==1){
+            require(feesCreator==95);
+        }else{
+            require(feesCreator<=5);
+
+        }
+        
         LotteryContract newLottery = new LotteryContract(
             msg.sender,
             miniumAmount,
@@ -43,8 +57,14 @@ contract LotteryFactory {
             adminAddr
         );
         address addr = address(newLottery);
+        userContracts[msg.sender].push(createdContract(addr,name));
         createdLoteries.push(addr);
-        return (address(addr),name,description,msg.sender);
+        return address(addr);
+    }
+
+    function getUserContracts(address _user)public view returns(createdContract[] memory contracts){
+        
+        return userContracts[_user];
     }
 
     function changeAdmin(address newAdmin)public {
