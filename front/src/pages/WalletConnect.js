@@ -2,16 +2,20 @@ import { useState } from "react";
 import LoginWalletModal from "../components/loginWalletModal";
 import { HashConnect } from 'hashconnect';
 import { Outlet } from "react-router";
-import useWalletUser from '../hooks/useWalletUser';
 import Header from "../components/header";
+import ContractFactory from "../components/useContractFactory";
+import useWalletUser from "../hooks/useWalletUser";
+
+let contractFactory;
 
 function WalletConnect() {
     const [walletuser,setWalletUser] = useWalletUser();
     //SHOW LOGIN FUNC
-    const [showLoginWallet,setShowLoginWallet] = useState(false);
+    const [showLoginWallet,setShowLoginWallet] = useState(true);
     
     const hashconnect = new HashConnect();
 
+    
     let saveData = {
         topic:"",
         pairingString:"",
@@ -52,6 +56,7 @@ function WalletConnect() {
                     }
                 })
                 setWalletUser({pairedAccounts:saveData.pairedAccounts});
+                contractFactory = new ContractFactory(hashconnect,{topic: initData.topic,pairedAccounts:[...saveData.pairedAccounts]});
             })
             
             
@@ -73,3 +78,4 @@ function WalletConnect() {
 }
 
 export default WalletConnect;
+export {contractFactory};
