@@ -1,9 +1,8 @@
 import { useSelector } from 'react-redux';
 
-function usefactoryContractAddress(){
+function useFactoryContractAddress(){
     const walletUser = useSelector((state) => state.factoryContractAddress);
-
-    return walletUser;
+    return walletUser.address;
 }
 
-export default usefactoryContractAddress;
+export default useFactoryContractAddress;

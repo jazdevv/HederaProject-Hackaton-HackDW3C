@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import { contractFactory } from './WalletConnect';
 import AddPrizes from '../components/addPrizes';
 function CreateRuffle(){
     const [prizes,setPrizes] = useState(['prize1','surprise']);
@@ -70,7 +70,7 @@ function CreateRuffle(){
                     <div className='flex text-lg font-bold text-gray-800'>You are going to receive 95% of every ticket sold</div>
                 </div>
                 <div className='bg-yellow-200 text-sm w-80 p-2'>
-                Once you create a lottery, it cannot be deleted. However, you can create new lotteries as needed. Please review all details carefully before submitting to ensure accuracy.                </div>
+Once you create a lottery, it cannot be deleted. However, you can create new lotteries as needed. Please review all details carefully before submitting to ensure accuracy.                </div>
                 <div onClick={handleClickSubmit} className='blue w-36 h-12 flex justify-center items-center text-white font-bold cursor-pointer'>
                     CREATE Raffle
                 </div>

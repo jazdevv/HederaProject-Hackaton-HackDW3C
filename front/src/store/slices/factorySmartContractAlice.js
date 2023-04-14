@@ -8,7 +8,9 @@ export const factoryContractSlice = createSlice({
   name: 'factoryContractAddress',
   initialState,
   reducers: {
-
+    updateState: (state,action) => {
+      state.address = action.payload
+    },
   },
 })
 

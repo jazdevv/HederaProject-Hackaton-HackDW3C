@@ -8,12 +8,12 @@ import useWalletUser from "../hooks/useWalletUser";
 import usefactoryContractAddress from "../hooks/useFactoryContractAddress";
 
 let contractFactory;
-const factoryaddress = usefactoryContractAddress();
 function WalletConnect() {
     const [walletuser,setWalletUser] = useWalletUser();
     //SHOW LOGIN FUNC
     const [showLoginWallet,setShowLoginWallet] = useState(true);
-    
+    const factoryaddress = usefactoryContractAddress();
+
     const hashconnect = new HashConnect();
 
     
@@ -57,7 +57,7 @@ function WalletConnect() {
                     }
                 })
                 setWalletUser({pairedAccounts:saveData.pairedAccounts});
-                
+                console.log('faddr',factoryaddress)
                 contractFactory = new ContractFactory(hashconnect,{topic: initData.topic,pairedAccounts:[...saveData.pairedAccounts]},factoryaddress);
             })
             
