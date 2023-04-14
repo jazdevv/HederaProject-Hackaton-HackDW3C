@@ -7,13 +7,13 @@ class ContractFactory {
     #network;
     #factoryContractId;
 
-    constructor(_hashconnect,_saveData){
+    constructor(_hashconnect,_saveData,factorycontractid){
         
         this.#hashconnect = _hashconnect;
         this.#topic = _saveData.topic;
         this.#accountId = _saveData.pairedAccounts[0];
         this.#network = 'testnet';
-        this.#factoryContractId = ContractId.fromString('0.0.4077369');
+        this.#factoryContractId = ContractId.fromString(factorycontractid);
     }
 
     async createLottery( miniumAmount,  name,  description, linkCreator, feesCreator, prizes){

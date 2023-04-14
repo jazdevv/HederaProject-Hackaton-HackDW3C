@@ -5,9 +5,10 @@ import { Outlet } from "react-router";
 import Header from "../components/header";
 import ContractFactory from "../components/useContractFactory";
 import useWalletUser from "../hooks/useWalletUser";
+import usefactoryContractAddress from "../hooks/useFactoryContractAddress";
 
 let contractFactory;
-
+const factoryaddress = usefactoryContractAddress();
 function WalletConnect() {
     const [walletuser,setWalletUser] = useWalletUser();
     //SHOW LOGIN FUNC
@@ -56,7 +57,8 @@ function WalletConnect() {
                     }
                 })
                 setWalletUser({pairedAccounts:saveData.pairedAccounts});
-                contractFactory = new ContractFactory(hashconnect,{topic: initData.topic,pairedAccounts:[...saveData.pairedAccounts]});
+                
+                contractFactory = new ContractFactory(hashconnect,{topic: initData.topic,pairedAccounts:[...saveData.pairedAccounts]},factoryaddress);
             })
             
             
