@@ -1,11 +1,13 @@
-import { ContractExecuteTransaction,ContractFunctionParameters,ContractId } from '@hashgraph/sdk'
-
+import { ContractExecuteTransaction,ContractFunctionParameters,ContractId,ContractCallQuery,Client,Hbar } from '@hashgraph/sdk'
+import Web3 from 'web3'
+const abiFile = require('../smartContractData/abi.json')
 class ContractFactory {
     #hashconnect;
     #topic;
     #accountId;
     #network;
     #factoryContractId;
+    #abi;
 
     constructor(_hashconnect,_saveData,_factorycontract){
         
@@ -14,7 +16,7 @@ class ContractFactory {
         this.#accountId = _saveData.pairedAccounts[0];
         this.#network = 'testnet';
         this.#factoryContractId = ContractId.fromString(_factorycontract);
-        console.log(this.#factoryContractId)
+        this.#abi = abiFile.abi;
     }
 
     async createLottery( miniumAmount,  name,  description, linkCreator, feesCreator, prizes){
@@ -48,8 +50,44 @@ class ContractFactory {
         return await this.#transactionExecute(transaction);
     }
 
+    async getContracts(){
+
+        //web3 instance
+        const web3 = new Web3();
+        //create client, hashpack signer dont works with ContractCallQuery(), Solve with mirror nodes in future
+        const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
+        //function Name
+        let fcnName = 'getContracts';
+        
+        const transaction = new ContractCallQuery()
+            .setContractId(this.#factoryContractId)
+            .setGas('100000')
+            .setFunction('getContracts')
+
+        //NOT WORKING WITH SIGNER    
+        // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
+        // const signer = this.#hashconnect.getSigner(provider);
+        const res = await transaction.execute(client);
+        const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3);
+        return contracts.messageOut
+    }
+
+    encodeFunctionCall(functionName, parameters,web3) {
+        const functionAbi = this.#abi.find(func => (func.name === functionName && func.type === "function"));
+        const encodedParametersHex = web3.eth.abi.encodeFunctionCall(functionAbi, parameters).slice(2);
+        return Buffer.from(encodedParametersHex, 'hex');
+    }
+
+    decodeFunctionResult(functionName, resultAsBytes,web3) {
+        
+        const functionAbi = this.#abi.find(func => func.name === functionName);
+        const functionParameters = functionAbi.outputs;
+        const resultHex = '0x'.concat(Buffer.from(resultAsBytes).toString('hex'));
+        const result = web3.eth.abi.decodeParameters(functionParameters, resultHex);
+        return result;
+    }
+
     async #transactionExecute(transaction){
-        console.log(this.#network,this.#topic,this.#accountId)
         const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
         const signer = this.#hashconnect.getSigner(provider);
         transaction.freezeWithSigner(signer);
