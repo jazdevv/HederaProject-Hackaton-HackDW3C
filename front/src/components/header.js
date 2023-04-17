@@ -13,7 +13,6 @@ function Header(){
         setOpenDropDown(!openDropdown);
     }
 
-    console.log(walletUser)
     return <div className="flex flex-col w-full">
         <div className={`header h-12 w-full ${degradiant}`}>
             <div className=" text-white text-md font-bold">

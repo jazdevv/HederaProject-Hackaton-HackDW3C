@@ -1,6 +1,8 @@
-import { ContractExecuteTransaction,ContractFunctionParameters,ContractId,ContractCallQuery,Client,Hbar } from '@hashgraph/sdk'
+import { ContractExecuteTransaction,ContractFunctionParameters,ContractId,ContractCallQuery,Client,Hbar,AccountId } from '@hashgraph/sdk'
 import Web3 from 'web3'
-const abiFile = require('../smartContractData/abi.json')
+const abiFile = require('../smartContractData/abi.json');
+const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.json')
+
 class ContractFactory {
     #hashconnect;
     #topic;
@@ -8,6 +10,7 @@ class ContractFactory {
     #network;
     #factoryContractId;
     #abi;
+    #abiLotteryRaffle;
 
     constructor(_hashconnect,_saveData,_factorycontract){
         
@@ -17,9 +20,11 @@ class ContractFactory {
         this.#network = 'testnet';
         this.#factoryContractId = ContractId.fromString(_factorycontract);
         this.#abi = abiFile.abi;
+        this.#abiLotteryRaffle = abiFileLotteryRaffle.abi
     }
 
     async createLottery( miniumAmount,  name,  description, linkCreator, feesCreator, prizes){
+        console.log('adding prizes',prizes)
         const transaction = new ContractExecuteTransaction()
             .setContractId(this.#factoryContractId)
             .setGas(1000000)
@@ -30,6 +35,8 @@ class ContractFactory {
                 .addString(description)
                 .addString(linkCreator)
                 .addUint256(feesCreator)
+                .addStringArray(['no'])
+                .addUint256Array(prizes)
 
             )
         return await this.#transactionExecute(transaction);
@@ -46,6 +53,8 @@ class ContractFactory {
                 .addString(description)
                 .addString(linkCreator)
                 .addUint256(95)//in the raffle the host gets 95% of the raffle money, the rest are fees
+                .addStringArray(prizes)
+                .addUint256Array([0])
             )
         return await this.#transactionExecute(transaction);
     }
@@ -58,7 +67,7 @@ class ContractFactory {
         const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
         //function Name
         let fcnName = 'getContracts';
-        
+        console.log(this.#factoryContractId)
         const transaction = new ContractCallQuery()
             .setContractId(this.#factoryContractId)
             .setGas('100000')
@@ -68,8 +77,33 @@ class ContractFactory {
         // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
         // const signer = this.#hashconnect.getSigner(provider);
         const res = await transaction.execute(client);
-        const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3);
+        console.log(res)
+        const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abi);
         return contracts.messageOut
+    }
+
+    async getContractData(contractAddress){
+        // //web3 instance
+        // const web3 = new Web3();
+        // //create client, hashpack signer dont works with ContractCallQuery(), Solve with mirror nodes in future
+        // const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
+        // //function Name
+        // let fcnName = 'getContractData';
+        // const id = ContractId.fromSolidityAddress(contractAddress)
+        // console.log("type",typeof(contractAddress))
+        // console.log(id)
+        // const transaction = new ContractCallQuery()
+        //     .setContractId(id)
+        //     .setGas('100000')
+        //     .setFunction(fcnName)
+
+        // //NOT WORKING WITH SIGNER    
+        // // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
+        // // const signer = this.#hashconnect.getSigner(provider);
+        // const res = await transaction.execute(client);
+        // const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abiLotteryRaffle);
+        // return contracts.messageOut
+        return ""
     }
 
     encodeFunctionCall(functionName, parameters,web3) {
@@ -78,11 +112,13 @@ class ContractFactory {
         return Buffer.from(encodedParametersHex, 'hex');
     }
 
-    decodeFunctionResult(functionName, resultAsBytes,web3) {
+    decodeFunctionResult(functionName, resultAsBytes,web3,abi) {
         
-        const functionAbi = this.#abi.find(func => func.name === functionName);
+        const functionAbi = abi.find(func => func.name === functionName);
         const functionParameters = functionAbi.outputs;
+        console.log(functionParameters)
         const resultHex = '0x'.concat(Buffer.from(resultAsBytes).toString('hex'));
+        console.log(resultHex)
         const result = web3.eth.abi.decodeParameters(functionParameters, resultHex);
         return result;
     }

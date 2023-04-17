@@ -35,7 +35,7 @@ function WalletConnect() {
         if(saveData.pairedAccounts.length===0){
             let initData = await hashconnect.init(appMetaData,'testnet',true);
             
-            
+            console.log(initData)
             setWalletUser({
                 topic: initData.topic,
                 pairingString: initData.pairingString
@@ -57,7 +57,6 @@ function WalletConnect() {
                     }
                 })
                 setWalletUser({pairedAccounts:saveData.pairedAccounts});
-                console.log('faddr',factoryaddress)
                 contractFactory = new ContractFactory(hashconnect,{topic: initData.topic,pairedAccounts:[...saveData.pairedAccounts]},factoryaddress);
             })
             

@@ -9,7 +9,7 @@ import { Provider } from 'react-redux'
 const el = document.getElementById('root');
 const root = createRoot(el);
 
-root.render(<div className='h-full bg-gray-600'>
+root.render(<div className='h-full min-h-screen gris'>
       <Provider store={store}>
             <RouterProvider router={router}/>  
       </Provider>
