@@ -4,7 +4,8 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./Lottery.sol";
 
-contract LotteryFactory {
+contract FactoryContract {
+    event eventAllContracts(string indexed val,address contractAddr,string name, address creator,uint typeContract);
 
     //lottery factory admin
     uint public percentageFees;
@@ -14,26 +15,18 @@ contract LotteryFactory {
     //created lotteries
     address[] public createdLoteries;
     //contracts of created Lotteries of every User
-    mapping(address=>createdContract[]) userContracts;
-    struct createdContract {
-        address contractAddress;
-        string name;
-    }
-    // struct LotteryData{
-    //     address addr;
-    //     string name;
-    //     string description;
-    //     address creator'
-    // }
-    constructor(uint initialFeesValue){
+    mapping(address=>address[]) userContracts;
+    
+
+    constructor(){
         creator = msg.sender;
         adminAddr = msg.sender;
-        require(initialFeesValue < 100);
-        percentageFees = initialFeesValue;
+        percentageFees = 5;
     
     }
 
-    function deployLotteryContract(uint miniumAmount, uint lotteryTypeVal, string memory name, string memory description,string memory linkCreator,uint feesCreator)
+    function deployLotteryContract(uint miniumAmount, uint lotteryTypeVal, string memory name, string memory description,string memory linkCreator,
+                                    uint feesCreator,string[] memory _prizesRaffle,uint[] memory _prizesLottery)
     public payable returns(address)
     {
         if(lotteryTypeVal==0){
@@ -54,22 +47,23 @@ contract LotteryFactory {
             linkCreator,
             percentageFees,
             feesCreator,
-            adminAddr
+            adminAddr,
+            _prizesRaffle,
+            _prizesLottery
         );
         address addr = address(newLottery);
-        userContracts[msg.sender].push(createdContract(addr,name));
+        userContracts[msg.sender].push(addr);
         createdLoteries.push(addr);
+        emit eventAllContracts("contracts",addr,name,msg.sender,lotteryTypeVal);
         return address(addr);
     }
 
-    function getUserContracts(address _user)public view returns(createdContract[] memory contracts){
+    function getUserContracts(address _user)public view returns(address[] memory messageOut){
         
         return userContracts[_user];
     }
 
-    function changeAdmin(address newAdmin)public {
-        require(msg.sender==adminAddr);
-        adminAddr = newAdmin;
+    function getContracts()public view returns(address[] memory messageOut){
+        return createdLoteries;
     }
-
 }

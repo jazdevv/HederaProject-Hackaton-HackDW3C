@@ -6,13 +6,18 @@ import "./NFTCreator.sol";
 
 contract LotteryContract is NFTCreator {
 
+    event eventcontractData(string indexed val,address creator,string  lotteryName,string  lotteryDescription,uint miniumAmountParticipate,
+                                            uint amount,uint participationsAmount,string  status);
+
+
     struct Winner {
         address nftAdress;
+        int NFTserialNumber;
         address addresRecivePrize;
         string email;
         string socialMedia;
-        bool receivedPrize;
-        bool startRecivingPrice;
+        bool receivedPrize; 
+        bool winner; //true
     }
 
 
@@ -26,10 +31,6 @@ contract LotteryContract is NFTCreator {
         _;
     }
 
-    modifier typeMoneyLottery(){
-        require(lotteryType==LotteryTypes.MONEY,"this type of contract cant execute this func");
-        _;
-    }
 
     modifier typePrizesLottery(){
         require(lotteryType==LotteryTypes.PRIZES,"this type of contract cant execute this func");
@@ -50,7 +51,6 @@ contract LotteryContract is NFTCreator {
     uint public percentageFeesCreator;
     uint public feesAmount; //count fees
     uint public feesAmountCreator;
-    uint public initialAmount;
     uint public amount;
     enum LotteryTypes{MONEY,PRIZES}
     LotteryTypes public lotteryType;
@@ -61,9 +61,10 @@ contract LotteryContract is NFTCreator {
     uint public participationsAmount;
     address public tokenNFT;
     address[] public mintedNFT;
-    mapping(address=>address) public eachUserTickets;
-    Winner[] public winnersNFT;//???mapping instead
-    string[] public prizes;
+    mapping(address => Winner) public DataWinnersNFT;//contains data of each winners NFT
+    address[] public WinnersNft; //Array that contains the different winners
+    string[] public prizesRaffle;
+    uint[] public prizesLottery;
     bool availableTakeFees;
     
 
@@ -76,7 +77,9 @@ contract LotteryContract is NFTCreator {
         string memory link,
         uint fees,
         uint feesCreator,
-        address givenAdmin
+        address givenAdmin,
+        string[] memory _prizesRaffle,
+        uint[] memory _prizesLottery
     )
     {
         
@@ -90,16 +93,21 @@ contract LotteryContract is NFTCreator {
         admin = givenAdmin;
         lotteryStatus = "ongoing";
 
+
         //define lottery type
         if(lotteryTypeVal==0){
             lotteryType = LotteryTypes.MONEY;
+            prizesLottery = _prizesLottery;
         }else if(lotteryTypeVal==1){
             lotteryType = LotteryTypes.PRIZES;
+            prizesRaffle = _prizesRaffle;
         }else{
             lotteryType = LotteryTypes.MONEY;
+            prizesLottery = _prizesLottery;
         }
         
-
+        emit eventcontractData("contractdata",creatorAdd,name,description,miniumAmount,0,0,"ongoing");
+        
     }
 
     function takeFees(uint sendedAmount) private returns(uint){
@@ -128,11 +136,16 @@ contract LotteryContract is NFTCreator {
 
     function addInitialAmount()public payable restrictedCreator{
         uint amountWithoutFees = takeFees(msg.value);
-        //initial amount
-        initialAmount = initialAmount + amountWithoutFees;
-        //contract amount
+        
         amount = amount + amountWithoutFees;
     }
+
+    // function getContractData()public view returns(address _creator,string memory _lotteryName,string memory _lotteryDescription,uint _miniumAmountParticipate,
+    //                                         uint _amount,uint _participationsAmount,string memory _status,string[] memory _prizesRaffle, 
+    //                                         uint[] memory _prizesLottery,address[] memory _winnersNFT){
+       
+    //     return (creator,LotteryName,LotteryDescription,miniumAmountParticipate,amount,participationsAmount,lotteryStatus,prizesRaffle,prizesLottery,WinnersNft);
+    // }
 
     function joinLottery() public payable{
         //CHECK IF USER PAYED THE AMOUNT TO JOIN
@@ -147,34 +160,17 @@ contract LotteryContract is NFTCreator {
         lotteryStatus = "finished";
     }
 
-    // function getParticipants() public view returns(address[]){
-    //     //WHO IS PARTICIPATING
-    // }
+    function winnerAddContactInfo(address addressNFT,int serialNumberNFT) public typePrizesLottery{
+        //CHECK IF HE IS THE OWNER OF THE NFT HE IS ASKING TO CLAIM
 
-
-    //-----------IDEA-----------
-    function isWinner() public {
-        //CHECK WHAT NFT THE OWNER HAVE
-
-        //DOES THEM MATCH WITH ONES OF THE ARRAY?
-
-        //RETURN BOOLEAN
-    }
-    function receivePrize() public {
-        //CHECK WHAT NFT THE OWNER HAVE
-
-        //ADD OWNER ADDRESS nf winner --> participant info
-
-        //SEND THE PRIZE AMOUNT OF MONEY TO THE WINNER ADDRESS IF THATS THE TYPE OF LOTTERY
+        //ADD CONTACT INFO
     }
 
-    function winnerAddContactInfo() public typePrizesLottery{
-
+    function getPrizesRaffle() public view returns(string[] memory ){
+        return prizesRaffle;
     }
-
-
-    function getContractBalance() public view returns(uint){
-        return amount;
+    function getPrizesLottery() public view returns(uint[] memory ){
+        return prizesLottery;
     }
 
     
