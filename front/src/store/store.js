@@ -1,14 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/UserSlice';
 import factoryReducer from './slices/factorySmartContractAlice';
+import contractsMainPage from './slices/contractsMainPage';
+import { update } from './slices/contractsMainPage';
 import { updateUser } from './slices/UserSlice';
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    factoryContractAddress: factoryReducer
+    factoryContractAddress: factoryReducer,
+    mainpageContracts: contractsMainPage
   },
 })
 
 export default store;
-export { updateUser };
+export { updateUser,update };

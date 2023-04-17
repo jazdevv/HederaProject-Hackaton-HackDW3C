@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     topic:"",
     pairingString:"",
-    pairedAccounts:["0.0.4011011"]
+    pairedAccounts:[]
 }
 
 export const userSlice = createSlice({
