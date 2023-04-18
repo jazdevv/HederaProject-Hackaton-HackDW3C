@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/UserSlice';
-import factoryReducer from './slices/factorySmartContractAlice';
+import factoryReducer from './slices/factorySmartContractSlice';
 import contractsMainPage from './slices/contractsMainPage';
 import { update } from './slices/contractsMainPage';
 import { updateUser } from './slices/UserSlice';

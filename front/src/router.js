@@ -37,7 +37,7 @@ const router = createBrowserRouter([
           element:<ParticipationsPage/>
         },
         {
-          path: "/contract/:ontractid",
+          path: "/contract/:contractAddress",
           element: <ContractPage/>
         }
       ]
