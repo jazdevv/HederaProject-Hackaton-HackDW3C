@@ -16,7 +16,7 @@ function Header(){
     return <div className="flex flex-col w-full">
         <div className={`header h-12 w-full ${degradiant}`}>
             <div className=" text-white text-md font-bold">
-                Create Lotteries and Raffles or Participate and win amazing prizes!
+                Create fair, transparent and secure Lotteries and Raffles with Hedera Hashgraph technology!
             </div>
         </div>
         <div className=" md:h-16 gris justify-between w-full flex flex-col md:flex-row py-4 md:py-0 gap-4 md:gap-0 border-b-2 pb-2 border-gray-800">
@@ -65,14 +65,9 @@ function Header(){
                     </div>                        
    
                     {openDropdown && <div className="absolute top-12 w-full bg-blue flex flex-col gap-2 bg-gray-500 text-gray-900 font-lg font-bold rounded ">
-                        <Link to='/wallet/created/raffles'>
+                        <Link to='/wallet/created/created'>
                             <div className="w-full flex justify-end hover:bg-gray-400 p-2">
-                                created raffles
-                            </div>
-                        </Link>
-                        <Link to='/wallet/created/lotteries'>
-                            <div className="w-full flex justify-end hover:bg-gray-400 p-2">
-                                created lotteries
+                                created raffles & lotteries
                             </div>
                         </Link>
                         <Link to='/wallet/participations'>

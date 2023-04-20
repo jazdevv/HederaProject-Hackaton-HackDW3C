@@ -1,5 +1,6 @@
 import { ContractExecuteTransaction,ContractFunctionParameters,ContractId,ContractCallQuery,Client,Hbar,AccountId } from '@hashgraph/sdk'
 import Web3 from 'web3'
+import axios from 'axios';
 const abiFile = require('../smartContractData/abi.json');
 const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.json')
 
@@ -79,6 +80,34 @@ class ContractFactory {
         const res = await transaction.execute(client);
         console.log(res)
         const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abi);
+        return contracts.messageOut
+    }
+
+    async getUserContracts(){
+
+        //web3 instance
+        const web3 = new Web3();
+        //create client, hashpack signer dont works with ContractCallQuery(), Solve with mirror nodes in future
+        const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
+        //function Name
+        let fcnName = 'getContracts';
+        const response = await axios.get(`https://testnet.mirrornode.hedera.com/api/v1/accounts/${this.#accountId}`)
+        console.log(response.data)
+        
+        const transaction = new ContractCallQuery()
+            .setContractId(this.#factoryContractId)
+            .setGas('100000')
+            .setFunction('getUserContracts',new ContractFunctionParameters()
+                .addAddress(response.data.evm_address))
+
+        //NOT WORKING WITH SIGNER    
+        // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
+        // const signer = this.#hashconnect.getSigner(provider);
+        const res = await transaction.execute(client);
+        console.log(res)
+        
+        const contracts = this.decodeFunctionResult('getUserContracts',res.bytes,web3,this.#abi);
+
         return contracts.messageOut
     }
 
