@@ -2,7 +2,7 @@ import { useParams } from "react-router"
 import { useState,useEffect } from "react";
 import { contractFactory } from "./WalletConnect";
 import useWalletUser from "../hooks/useWalletUser";
-import {ContractId } from '@hashgraph/sdk'
+import {ContractId,Hbar } from '@hashgraph/sdk'
 import Web3 from "web3";
 import axios from "axios";
 const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.json')
@@ -10,22 +10,23 @@ const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.jso
 function ContractPage(){
     let { contractAddress } = useParams();
     const [loading,setLoading] = useState(true);
+    const [prizes,setPrizes] = useState([]);
+    const [lotteryType,setLotteryType] = useState('lottery');
+    const [winners] = useState([]);
     const [data,setData] = useState({
         lotteryName:"",
         lotteryDescription:"",
         participationsAmount:0,
-        miniumAmountParticipate:0
+        miniumAmountParticipate:0,
+        amount: 0
     });
     const [wallet] = useWalletUser();
     useEffect(()=>{
         const getContractData = async()=>{
-            // if(wallet.pairedAccounts.length === 0){
-            //     return
-            // }
-            console.log('getting data of ',contractAddress)
+            if(wallet.pairedAccounts.length === 0){
+                return
+            }
             const id = ContractId.fromSolidityAddress(contractAddress)
-            console.log('id',id.num.low)
-            // console.log(data)
             const getContractsMirrorNode = async () => {
                 const web3 = new Web3();
                 const abi = abiFileLotteryRaffle.abi;
@@ -35,25 +36,59 @@ function ContractPage(){
                     const decodedLog = web3.eth.abi.decodeLog(eventAbi.inputs, log, topics);
                     return decodedLog;
                 }
+
+                function setPrizesState(lotteryPrizes,rafflePrizes,amount) {
+                    if(lotteryPrizes[0]!="0"&&rafflePrizes[0]=='no'){
+                        setLotteryType('lottery');
+                        let prizes = [];
+                        lotteryPrizes.forEach(prize=>{
+                            let amountperprize = Number(prize) * (amount*0.000000001) / 100
+                            let hbar_no_decimals = amountperprize.toString().split('.')[0];
+                            prizes.push(`${prize}% | ${hbar_no_decimals} hbar`)
+                        })
+                        setPrizes([...prizes]);
+                    }else{
+                        setLotteryType('raffle');
+                        setPrizes([...rafflePrizes])    
+                    }
+                }
                 const url = `https://testnet.mirrornode.hedera.com/api/v1/contracts/0.0.${id.num.low}/results/logs?order=asc`;
     
                 await axios.get(url).then(function (response) {
-                    console.log(response)
                     const jsonResponse = response.data;
                     const last_log = jsonResponse.logs[jsonResponse.logs.length-1];
                     const decoded_data = decodeEvent("eventcontractData", last_log.data, last_log.topics.slice(1));
                     setData(decoded_data);
-                    // jsonResponse.logs.forEach((log) => {
-                    //     // decode the event data
-                    //     const event = decodeEvent("eventcontractData", log.data, log.topics.slice(1));
-                    //     console.log(event)
-                        
-                    // });
                     setLoading(false);
+                    setPrizesState(decoded_data.prizesLottery,decoded_data.prizesRaffle,decoded_data.amount);
                 })
                 .catch(function (err) {
                     console.error(err);
                 });
+
+                //OTHER WAY THAT ALSO WORKS
+                // const { ethers } = require("ethers");
+
+                // const provider = new ethers.providers.JsonRpcProvider(/* Your provider URL here */);
+
+                // const contractABI = [...]; // The ABI of your LotteryContract
+                // const contractAddress = "0x..."; // The address of your deployed LotteryContract
+
+                // const contractInstance = new ethers.Contract(contractAddress, contractABI, provider);
+
+                // contractInstance.on("eventcontractData", (val, creator, lotteryName, lotteryDescription, miniumAmountParticipate, amount, participationsAmount, status, prizesLottery, prizesRaffle, event) => {
+                //     console.log("Event data:");
+                //     console.log("val:", val);
+                //     console.log("creator:", creator);
+                //     console.log("lotteryName:", lotteryName);
+                //     console.log("lotteryDescription:", lotteryDescription);
+                //     console.log("miniumAmountParticipate:", miniumAmountParticipate.toString());
+                //     console.log("amount:", amount.toString());
+                //     console.log("participationsAmount:", participationsAmount.toString());
+                //     console.log("status:", status);
+                //     console.log("prizesLottery:", prizesLottery);
+                //     console.log("prizesRaffle:", prizesRaffle);
+                // });
                 
                 
     
@@ -65,15 +100,48 @@ function ContractPage(){
         getContractData()
     },[contractAddress,wallet])
     console.log("data",data)
-    let Type = "";
-    // //typeof(data.typeContract) = string
-    // if(data.typeContract==0){
-    //     Type = "Lottery"  
-    // }else if(data.typeContract==1){
-    //     Type = "Raffle"
-    // }else{
-    //     Type = "Lottery"  
-    // }
+    let renderTotalAmount;
+    const render_amount_hbar = data.amount*0.000000001
+    if(lotteryType==="lottery"){
+        renderTotalAmount = <div className="flex flex-col bg-gray-900 p-6">
+            <div className="text-blue-600 text-xl">
+                total prizepool
+            </div>
+            <div className="flex gap-2 text-white text-3xl font-bold">
+                {render_amount_hbar} 
+                <div>
+                    hbar 
+                </div>   
+            </div>                    
+        </div>
+    }else{
+        renderTotalAmount = <div>
+
+        </div>
+    }
+    const renderPrizes = prizes.map((prize,i) => {
+        let winnerValue;
+        if(winners.length === 0){
+            winnerValue = 'To be announced'
+        }else{
+            winnerValue = winners[i-1]
+        }
+        
+        return <>
+            <div className="flex gap-2">
+                <div>
+                    {i+1}-    
+                </div>
+                <div>
+                    {prize}    
+                </div>
+                
+            </div>
+            <div>
+                {winnerValue}
+            </div>
+        </>
+    });
     let statusbtn;
     if(data.status==="ongoing"){
         statusbtn = <div className="bg-green-500 p-2 rounded text-black">
@@ -85,7 +153,7 @@ function ContractPage(){
         </div>
     }
     const content = <div className="flex flex-col w-full gap-2">
-        <div className="flex w-full gap-6">
+        <div className="flex w-full gap-6 flex-col md:flex-row">
             <div className="bg-gray-900 p-6 w-full">
                 <div className="text-blue-600 text-xl ">
                     name
@@ -131,34 +199,51 @@ function ContractPage(){
                 
             </div> 
         </div>
-        <div className="bg-gray-900 p-6 w-full">
-                <div className="text-blue-600 text-xl ">
-                    info
+        <div className="flex gap-6 flex-col-reverse md:flex-row">
+            <div className="flex flex-col gap-6 w-3/5">
+                    <div className="bg-gray-900 p-6 w-full">
+                            <div className="text-blue-600 text-xl ">
+                                info
+                            </div>
+                            <div className="flex w-full text-gray-500 text-md  ">
+                                Upon participating in an event and completing the entrance fee, your participation will be admitted in the smart contract. If you are fortunate enough to win the lottery, the prize money will be automatically deposited into your account. However, if you win a raffle, you will be required to provide specific credentials in order the raffle creator contact with you and give your prize.                
+                            </div>   
+                            
+                    </div>
+                    <div className="bg-gray-900 p-6 w-full">
+                            <div className="text-blue-600 text-xl">
+                                description
+                            </div>
+                            <div className="flex w-full text-white text-xl">
+                                {data.lotteryDescription}
+                            </div>   
+                            
+                    </div>     
+                       
+                </div>    
+                <div className="w-full md:w-2/5 flex flex-col">
+                    <div className=" w-full flex flex-col gap-6">
+                        {renderTotalAmount} 
+                       <div className="flex flex-col bg-gray-900 p-6">
+                            <div className="text-blue-600 text-xl">
+                                prizes
+                            </div>
+                            <div className="grid grid-cols-2 w-full text-white text-xl">
+                                <div className="text-blue-600">
+                                    PRIZE
+                                </div>
+                                <div className="text-blue-600">
+                                    WINNER
+                                </div>
+                                {renderPrizes}
+                            </div>  
+                       </div>
+                                           
+                    </div>  
                 </div>
-                <div className="flex w-full text-gray-500 text-md  ">
-                Upon participating in an event and completing the entrance fee, an NFT will be issued as proof of admission. This NFT serves as a ticket for participation and also allows access to the prize pool. If you are fortunate enough to win the lottery, the prize money will be automatically deposited into your account. However, if you win a raffle, you will be required to provide specific credentials in order the raffle creator contact with you and give your prize.                
-                </div>   
-                
+            </div>
+            
         </div>
-        <div className="bg-gray-900 p-6 w-full">
-                <div className="text-blue-600 text-xl">
-                    description
-                </div>
-                <div className="flex w-full text-white text-xl">
-                    {data.lotteryDescription}
-                </div>   
-                
-        </div>     
-        <div className="bg-gray-900 p-6 w-full">
-                <div className="text-blue-600 text-xl">
-                    prizes
-                </div>
-                <div className="flex w-full text-white text-xl">
-                </div>   
-                
-        </div> 
-        
-    </div>
     return <div className="flex flex-col p-10 gap-2">
         <div className="bg-gray-900 p-6">
             <div className="text-blue-600 text-xl">
