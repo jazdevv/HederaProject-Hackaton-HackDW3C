@@ -2,7 +2,7 @@ import { useParams } from "react-router"
 import { useState,useEffect } from "react";
 import { contractFactory } from "./WalletConnect";
 import useWalletUser from "../hooks/useWalletUser";
-import {ContractId,Hbar } from '@hashgraph/sdk'
+import {ContractId,AccountId } from '@hashgraph/sdk'
 import Web3 from "web3";
 import axios from "axios";
 import CreatorPanel from "../components/creatorPanel";
@@ -67,6 +67,7 @@ function ContractPage(){
                     setData(decoded_data);
                     setLoading(false);
                     setPrizesState(decoded_data.prizesLottery,decoded_data.prizesRaffle,decoded_data.amount);
+                    setWinners([...decoded_data.winnersArray])
                 })
                 .catch(function (err) {
                     console.error(err);
@@ -131,7 +132,9 @@ function ContractPage(){
         if(winners.length === 0){
             winnerValue = 'To be announced'
         }else{
-            winnerValue = winners[i-1]
+            const addressid = AccountId.fromSolidityAddress(winners[i])
+            winnerValue = `0.0.${addressid.num.low}`
+
         }
         
         return <>
