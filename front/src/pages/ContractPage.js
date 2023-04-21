@@ -159,6 +159,16 @@ function ContractPage(){
             FINISHED
         </div>
     }
+    let participatebtn;
+    if(data.status=="finished"){
+        participatebtn = <div className="bg-gray-800 text-black text-md p-2 rounded cursor-pointer">
+            Participations closed
+        </div>
+    }else{
+        participatebtn = <div onClick={onClickParticipate} className="bg-blue-600 p-2 rounded text-white cursor-pointer">
+            Participate
+        </div>
+    }
     const content = <div className="flex flex-col w-full gap-2">
         <div className="flex w-full gap-6 flex-col md:flex-row">
             <div className="bg-gray-900 p-6 w-full">
@@ -189,9 +199,7 @@ function ContractPage(){
                             {data.miniumAmountParticipate} hbar   
                         </div>
                         
-                        <div onClick={onClickParticipate} className="bg-blue-600 p-2 rounded text-white cursor-pointer">
-                            Participate
-                        </div>
+                        {participatebtn}
                     </div>     
                 </div>
                     <div>
@@ -206,7 +214,7 @@ function ContractPage(){
                 
             </div> 
         </div>
-        <CreatorPanel data={data}/>
+        <CreatorPanel data={data} type={lotteryType} contractid={contractAddress}/>
         <div className="flex gap-6 flex-col-reverse md:flex-row">
             <div className="flex flex-col gap-6 w-3/5">
                     <div className="bg-gray-900 p-6 w-full">
