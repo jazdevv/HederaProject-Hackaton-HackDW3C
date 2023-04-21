@@ -5,6 +5,7 @@ import useWalletUser from "../hooks/useWalletUser";
 import {ContractId,Hbar } from '@hashgraph/sdk'
 import Web3 from "web3";
 import axios from "axios";
+import CreatorPanel from "../components/creatorPanel";
 const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.json')
 
 function ContractPage(){
@@ -12,15 +13,19 @@ function ContractPage(){
     const [loading,setLoading] = useState(true);
     const [prizes,setPrizes] = useState([]);
     const [lotteryType,setLotteryType] = useState('lottery');
-    const [winners] = useState([]);
+    const [winners,setWinners] = useState([]);
     const [data,setData] = useState({
         lotteryName:"",
         lotteryDescription:"",
         participationsAmount:0,
         miniumAmountParticipate:0,
-        amount: 0
+        amount: 0,
+        confirmedReceives:0
     });
     const [wallet] = useWalletUser();
+    const onClickParticipate = () => {
+        contractFactory.addParticipation(contractAddress,data.miniumAmountParticipate)
+    }
     useEffect(()=>{
         const getContractData = async()=>{
             if(wallet.pairedAccounts.length === 0){
@@ -42,7 +47,7 @@ function ContractPage(){
                         setLotteryType('lottery');
                         let prizes = [];
                         lotteryPrizes.forEach(prize=>{
-                            let amountperprize = Number(prize) * (amount*0.000000001) / 100
+                            let amountperprize = Number(prize) * (amount*0.00000001) / 100
                             let hbar_no_decimals = amountperprize.toString().split('.')[0];
                             prizes.push(`${prize}% | ${hbar_no_decimals} hbar`)
                         })
@@ -52,12 +57,13 @@ function ContractPage(){
                         setPrizes([...rafflePrizes])    
                     }
                 }
-                const url = `https://testnet.mirrornode.hedera.com/api/v1/contracts/0.0.${id.num.low}/results/logs?order=asc`;
+                const url = `https://testnet.mirrornode.hedera.com/api/v1/contracts/0.0.${id.num.low}/results/logs?order=desc`;
     
                 await axios.get(url).then(function (response) {
                     const jsonResponse = response.data;
-                    const last_log = jsonResponse.logs[jsonResponse.logs.length-1];
-                    const decoded_data = decodeEvent("eventcontractData", last_log.data, last_log.topics.slice(1));
+                    // const last_log = jsonResponse.logs[jsonResponse.logs.length-1];
+                    // const decoded_data = decodeEvent("eventcontractData", last_log.data, last_log.topics.slice(1));
+                    const decoded_data = decodeEvent("eventcontractData", jsonResponse.logs[0].data, jsonResponse.logs[0].topics.slice(1));
                     setData(decoded_data);
                     setLoading(false);
                     setPrizesState(decoded_data.prizesLottery,decoded_data.prizesRaffle,decoded_data.amount);
@@ -101,7 +107,7 @@ function ContractPage(){
     },[contractAddress,wallet])
     console.log("data",data)
     let renderTotalAmount;
-    const render_amount_hbar = data.amount*0.000000001
+    const render_amount_hbar = (data.amount*0.00000001).toString().split('.')[0];
     if(lotteryType==="lottery"){
         renderTotalAmount = <div className="flex flex-col bg-gray-900 p-6">
             <div className="text-blue-600 text-xl">
@@ -115,10 +121,11 @@ function ContractPage(){
             </div>                    
         </div>
     }else{
-        renderTotalAmount = <div>
+        renderTotalAmount = <>
 
-        </div>
+        </>
     }
+    
     const renderPrizes = prizes.map((prize,i) => {
         let winnerValue;
         if(winners.length === 0){
@@ -182,7 +189,7 @@ function ContractPage(){
                             {data.miniumAmountParticipate} hbar   
                         </div>
                         
-                        <div className="bg-blue-600 p-2 rounded text-white cursor-pointer">
+                        <div onClick={onClickParticipate} className="bg-blue-600 p-2 rounded text-white cursor-pointer">
                             Participate
                         </div>
                     </div>     
@@ -199,6 +206,7 @@ function ContractPage(){
                 
             </div> 
         </div>
+        <CreatorPanel data={data}/>
         <div className="flex gap-6 flex-col-reverse md:flex-row">
             <div className="flex flex-col gap-6 w-3/5">
                     <div className="bg-gray-900 p-6 w-full">
@@ -224,6 +232,14 @@ function ContractPage(){
                 <div className="w-full md:w-2/5 flex flex-col">
                     <div className=" w-full flex flex-col gap-6">
                         {renderTotalAmount} 
+                        <div className="flex flex-col bg-gray-900 p-6 gap-2">
+                            <div className="text-blue-600 text-xl">
+                                prize received confirmations
+                            </div> 
+                            <div className="text-xl text-white">
+                                {data.confirmedReceives}/{prizes.length}
+                            </div>
+                        </div>
                        <div className="flex flex-col bg-gray-900 p-6">
                             <div className="text-blue-600 text-xl">
                                 prizes

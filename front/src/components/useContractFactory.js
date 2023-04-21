@@ -60,6 +60,22 @@ class ContractFactory {
         return await this.#transactionExecute(transaction);
     }
 
+    async addParticipation(contractId,amount){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        let send_amount;
+        if(amount == 0){
+            send_amount = 0.001
+        }else{
+            send_amount = amount
+        }
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setPayableAmount(send_amount)
+            .setFunction("joinLottery")
+        return await this.#transactionExecute(transaction);
+    }
+
     async getContracts(){
 
         //web3 instance
@@ -111,29 +127,6 @@ class ContractFactory {
         return contracts.messageOut
     }
 
-    async getContractData(contractAddress){
-        // //web3 instance
-        // const web3 = new Web3();
-        // //create client, hashpack signer dont works with ContractCallQuery(), Solve with mirror nodes in future
-        // const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
-        // //function Name
-        // let fcnName = 'getContractData';
-        // const id = ContractId.fromSolidityAddress(contractAddress)
-        // console.log("type",typeof(contractAddress))
-        // console.log(id)
-        // const transaction = new ContractCallQuery()
-        //     .setContractId(id)
-        //     .setGas('100000')
-        //     .setFunction(fcnName)
-
-        // //NOT WORKING WITH SIGNER    
-        // // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
-        // // const signer = this.#hashconnect.getSigner(provider);
-        // const res = await transaction.execute(client);
-        // const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abiLotteryRaffle);
-        // return contracts.messageOut
-        return ""
-    }
 
     encodeFunctionCall(functionName, parameters,web3) {
         const functionAbi = this.#abi.find(func => (func.name === functionName && func.type === "function"));
@@ -145,9 +138,7 @@ class ContractFactory {
         
         const functionAbi = abi.find(func => func.name === functionName);
         const functionParameters = functionAbi.outputs;
-        console.log(functionParameters)
         const resultHex = '0x'.concat(Buffer.from(resultAsBytes).toString('hex'));
-        console.log(resultHex)
         const result = web3.eth.abi.decodeParameters(functionParameters, resultHex);
         return result;
     }
