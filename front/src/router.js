@@ -6,6 +6,7 @@ import CreateRaffles from "./pages/CreateRafflePage";
 import ParticipationsPage from "./pages/WalletParticipationsPage";
 import ContractPage from "./pages/ContractPage";
 import CreatedRafflesandLotteries from './pages/WalletCreatedRafflesandLotteriesPage'
+import ContractWinnersInfo from "./pages/ContractWinnersInfo";
 // REACT ROUTER
 const router = createBrowserRouter([
     {
@@ -28,13 +29,17 @@ const router = createBrowserRouter([
           path:"/wallet/created/created",
           element:<CreatedRafflesandLotteries/>
         },
-        {
-          path:"/wallet/participations",
-          element:<ParticipationsPage/>
-        },
+        // {
+        //   path:"/wallet/participations",
+        //   element:<ParticipationsPage/>
+        // },
         {
           path: "/contract/:contractAddress",
           element: <ContractPage/>
+        },
+        {
+          path: "/contractwinners/:contractAddress",
+          element: <ContractWinnersInfo/>
         }
       ]
     }

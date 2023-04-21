@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    address:"0.0.4190997"
+    address:"0.0.4337530"
 }
 
 export const factoryContractSlice = createSlice({

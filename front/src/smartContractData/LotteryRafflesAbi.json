@@ -65,25 +65,6 @@
             "anonymous": false,
             "inputs": [
                 {
-                    "indexed": false,
-                    "internalType": "bool",
-                    "name": "",
-                    "type": "bool"
-                },
-                {
-                    "indexed": false,
-                    "internalType": "bytes",
-                    "name": "",
-                    "type": "bytes"
-                }
-            ],
-            "name": "CallResponseEvent",
-            "type": "event"
-        },
-        {
-            "anonymous": false,
-            "inputs": [
-                {
                     "indexed": true,
                     "internalType": "string",
                     "name": "val",
@@ -130,59 +111,34 @@
                     "internalType": "string",
                     "name": "status",
                     "type": "string"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256[]",
+                    "name": "prizesLottery",
+                    "type": "uint256[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "string[]",
+                    "name": "prizesRaffle",
+                    "type": "string[]"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "uint256",
+                    "name": "confirmedReceives",
+                    "type": "uint256"
+                },
+                {
+                    "indexed": false,
+                    "internalType": "address[]",
+                    "name": "winnersArray",
+                    "type": "address[]"
                 }
             ],
             "name": "eventcontractData",
             "type": "event"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "name": "DataWinnersNFT",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "nftAdress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "int256",
-                    "name": "NFTserialNumber",
-                    "type": "int256"
-                },
-                {
-                    "internalType": "address",
-                    "name": "addresRecivePrize",
-                    "type": "address"
-                },
-                {
-                    "internalType": "string",
-                    "name": "email",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "socialMedia",
-                    "type": "string"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "receivedPrize",
-                    "type": "bool"
-                },
-                {
-                    "internalType": "bool",
-                    "name": "winner",
-                    "type": "bool"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
         },
         {
             "inputs": [],
@@ -211,25 +167,6 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "name": "WinnersNft",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "addInitialAmount",
             "outputs": [],
@@ -250,24 +187,6 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "amountTransfer",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "address payable",
-                    "name": "sendTo",
-                    "type": "address"
-                }
-            ],
-            "name": "adminMoveFeesToCreator",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "amount",
             "outputs": [
@@ -282,48 +201,35 @@
         },
         {
             "inputs": [],
+            "name": "availableTakeFees",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "chooseWinner",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "symbol",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "memo",
-                    "type": "string"
-                },
-                {
-                    "internalType": "int64",
-                    "name": "maxSupply",
-                    "type": "int64"
-                },
-                {
-                    "internalType": "int64",
-                    "name": "autoRenewPeriod",
-                    "type": "int64"
-                }
-            ],
-            "name": "createNft",
+            "inputs": [],
+            "name": "confirmedReceives",
             "outputs": [
                 {
-                    "internalType": "address",
+                    "internalType": "uint256",
                     "name": "",
-                    "type": "address"
+                    "type": "uint256"
                 }
             ],
-            "stateMutability": "payable",
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -366,26 +272,38 @@
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "getPrizesLottery",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_addressemail",
+                    "type": "address"
+                }
+            ],
+            "name": "getWinner",
             "outputs": [
                 {
-                    "internalType": "uint256[]",
+                    "internalType": "string",
                     "name": "",
-                    "type": "uint256[]"
+                    "type": "string"
                 }
             ],
             "stateMutability": "view",
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "getPrizesRaffle",
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "isWinner",
             "outputs": [
                 {
-                    "internalType": "string[]",
+                    "internalType": "bool",
                     "name": "",
-                    "type": "string[]"
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -440,36 +358,12 @@
         {
             "inputs": [
                 {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                },
-                {
-                    "internalType": "bytes[]",
-                    "name": "metadata",
-                    "type": "bytes[]"
-                }
-            ],
-            "name": "mintNft",
-            "outputs": [
-                {
-                    "internalType": "int64",
-                    "name": "",
-                    "type": "int64"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
                 }
             ],
-            "name": "mintedNFT",
+            "name": "participations",
             "outputs": [
                 {
                     "internalType": "address",
@@ -558,6 +452,26 @@
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "random",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "receivedPrizepool",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address payable",
@@ -571,26 +485,39 @@
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address payable",
-                    "name": "sendTo",
-                    "type": "address"
-                }
-            ],
+            "inputs": [],
             "name": "sendFeesToCreator",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "tokenNFT",
-            "outputs": [
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "_email",
+                    "type": "string"
+                }
+            ],
+            "name": "winnerAddContactInfo",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
                 {
                     "internalType": "address",
                     "name": "",
                     "type": "address"
+                }
+            ],
+            "name": "winnerEmail",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
                 }
             ],
             "stateMutability": "view",
@@ -600,115 +527,57 @@
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "from",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transferFrom",
-            "outputs": [
-                {
-                    "internalType": "int64",
-                    "name": "responseCode",
-                    "type": "int64"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "from",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "to",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "serialNumber",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transferFromNFT",
-            "outputs": [
-                {
-                    "internalType": "int64",
-                    "name": "responseCode",
-                    "type": "int64"
-                }
-            ],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "token",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "receiver",
-                    "type": "address"
-                },
-                {
-                    "internalType": "int64",
-                    "name": "serial",
-                    "type": "int64"
-                }
-            ],
-            "name": "transferNft",
-            "outputs": [
-                {
-                    "internalType": "int256",
                     "name": "",
-                    "type": "int256"
+                    "type": "address"
                 }
             ],
-            "stateMutability": "nonpayable",
+            "name": "winnerRafflePrize",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "addressNFT",
+                    "name": "",
                     "type": "address"
-                },
-                {
-                    "internalType": "int256",
-                    "name": "serialNumberNFT",
-                    "type": "int256"
                 }
             ],
-            "name": "winnerAddContactInfo",
-            "outputs": [],
-            "stateMutability": "nonpayable",
+            "name": "winnerreceivedPrize",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "winnersArray",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         }
     ]}
