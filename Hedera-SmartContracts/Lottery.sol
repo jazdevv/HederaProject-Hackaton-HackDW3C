@@ -2,20 +2,20 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-import "./NFTCreator.sol";
 
-contract LotteryContract is NFTCreator {
+contract LotteryContract {
 
     event eventcontractData(string indexed val,address creator,string  lotteryName,string  lotteryDescription,uint miniumAmountParticipate,
-                                            uint amount,uint participationsAmount,string  status);
+                                            uint amount,uint participationsAmount,string  status,uint[] prizesLottery,string[] prizesRaffle,uint confirmedReceives,address[]winnersArray);
 
+    // event eventPrizes(uint[] prizesLottery,string[] prizesRaffle);
 
     struct Winner {
-        address nftAdress;
-        int NFTserialNumber;
         address addresRecivePrize;
         string email;
         string socialMedia;
+        string prizeRaf;
+        uint prizeLot;
         bool receivedPrize; 
         bool winner; //true
     }
@@ -32,10 +32,6 @@ contract LotteryContract is NFTCreator {
     }
 
 
-    modifier typePrizesLottery(){
-        require(lotteryType==LotteryTypes.PRIZES,"this type of contract cant execute this func");
-        _;
-    }
     
     //lottery admin information
     address public admin; //Have the function of send money to the owner if the winners have not set the receivedPrize
@@ -47,8 +43,8 @@ contract LotteryContract is NFTCreator {
     string public LotteryDescription;
     string public linkCreator;
     uint public miniumAmountParticipate;//if there is a minium to participate
-    uint public percentageFees; 
-    uint public percentageFeesCreator;
+    uint public percentageFees; //5% 
+    uint public percentageFeesCreator;//5% MAX FOR LOTTERIES AND 95% FOR RAFFLE
     uint public feesAmount; //count fees
     uint public feesAmountCreator;
     uint public amount;
@@ -59,12 +55,12 @@ contract LotteryContract is NFTCreator {
     //lottery tecnical data mainly managed by smart contract
     string lotteryStatus; //"ongoing","finished"
     uint public participationsAmount;
-    address public tokenNFT;
-    address[] public mintedNFT;
-    mapping(address => Winner) public DataWinnersNFT;//contains data of each winners NFT
-    address[] public WinnersNft; //Array that contains the different winners
+    address[] public participations;
+    mapping(address => Winner) public DataWinners;//contains data of each winners NFT
+    address[] public winnersArray;
     string[] public prizesRaffle;
     uint[] public prizesLottery;
+    uint confirmedReceives;
     bool availableTakeFees;
     
 
@@ -92,21 +88,24 @@ contract LotteryContract is NFTCreator {
         percentageFeesCreator = feesCreator;
         admin = givenAdmin;
         lotteryStatus = "ongoing";
-
+        prizesRaffle = _prizesRaffle;
+        prizesLottery = _prizesLottery;
 
         //define lottery type
         if(lotteryTypeVal==0){
             lotteryType = LotteryTypes.MONEY;
-            prizesLottery = _prizesLottery;
+            
         }else if(lotteryTypeVal==1){
             lotteryType = LotteryTypes.PRIZES;
-            prizesRaffle = _prizesRaffle;
+            
         }else{
             lotteryType = LotteryTypes.MONEY;
             prizesLottery = _prizesLottery;
         }
+
+        // emit eventPrizes();
+        emit eventcontractData("contractdata",creatorAdd,name,description,miniumAmount,0,0,"ongoing",_prizesLottery,_prizesRaffle,0,winnersArray);
         
-        emit eventcontractData("contractdata",creatorAdd,name,description,miniumAmount,0,0,"ongoing");
         
     }
 
@@ -117,60 +116,107 @@ contract LotteryContract is NFTCreator {
         feesAmountCreator = feesAmountCreator + ((sendedAmount * percentageFeesCreator)/100);//take % of sendedAmount
         //amount without fees
         uint amountWithoutFees = sendedAmount - ((sendedAmount * percentageFees)/100) - ((sendedAmount * percentageFeesCreator)/100); 
-
+        
         return amountWithoutFees;
     } 
 
-    function sendFeesToAdmins(address payable sendTo) public restrictedMod{
+    function sendFeesToAdmins(address payable sendTo) external restrictedMod{
         sendTo.transfer(feesAmount);
     }
 
-    function sendFeesToCreator(address payable sendTo) public restrictedCreator{
+    function sendFeesToCreator() external restrictedCreator{
         require(availableTakeFees);
-        sendTo.transfer(feesAmountCreator);
+        payable(creator).transfer(feesAmountCreator);
+
     }
     
-    function adminMoveFeesToCreator(uint amountTransfer,address payable sendTo) public restrictedMod {
-        sendTo.transfer(amountTransfer);
-    }
 
     function addInitialAmount()public payable restrictedCreator{
+        
         uint amountWithoutFees = takeFees(msg.value);
         
         amount = amount + amountWithoutFees;
-    }
 
-    // function getContractData()public view returns(address _creator,string memory _lotteryName,string memory _lotteryDescription,uint _miniumAmountParticipate,
-    //                                         uint _amount,uint _participationsAmount,string memory _status,string[] memory _prizesRaffle, 
-    //                                         uint[] memory _prizesLottery,address[] memory _winnersNFT){
-       
-    //     return (creator,LotteryName,LotteryDescription,miniumAmountParticipate,amount,participationsAmount,lotteryStatus,prizesRaffle,prizesLottery,WinnersNft);
-    // }
+        //EMIT EVENT TO REFRESH THE DATA
+        emit eventcontractData("contractdata",creator,LotteryName,LotteryDescription,miniumAmountParticipate,amount,participationsAmount,lotteryStatus,prizesLottery,prizesRaffle,confirmedReceives,winnersArray);
+    }
 
     function joinLottery() public payable{
         //CHECK IF USER PAYED THE AMOUNT TO JOIN
+        require(msg.value > miniumAmountParticipate);
+        //TAKE FEES AND ADD AMOUNT TO TOTAL AMOUNT
+        uint valueWithoutFees = takeFees(msg.value);
+        amount = amount + valueWithoutFees;
+        //ADD PARTICIPATION TO THE PARTICIPANT
+        participations.push(msg.sender);
+        //INCREASE PARTICIPATIONS AMOUNT
+        participationsAmount = participationsAmount + 1;
+        //EMIT EVENT TO REFRESH THE DATA
+        emit eventcontractData("contractdata",creator,LotteryName,LotteryDescription,miniumAmountParticipate,amount,participationsAmount,lotteryStatus,prizesLottery,prizesRaffle,confirmedReceives,winnersArray);
 
-        //MINT AN NFT AS LOTTERY TICKET
-
-        //SEND THE NFT TO THE USER
     }
 
     function chooseWinner() public{
-        //CHOOSE THE WINNER NFT
+        //SET LOTTERY STATUS AS FINISHED
         lotteryStatus = "finished";
+
+        //CHOOSE THE WINNERS
+        //loop prizes y por cada una
+        if(lotteryType == LotteryTypes.MONEY){
+            for (uint i=0;i < prizesLottery.length;i++ ){
+                //get random number
+                uint _index = random() % participations.length;
+                //get winner by index
+                address winneraddr = participations[_index+i];
+                //push winner to winners array
+                winnersArray.push(winneraddr);
+                //add struct to winners data mapping
+                DataWinners[winneraddr] = Winner(winneraddr,"","","",prizesLottery[i],false,true);
+                //payprizes
+                payable(winneraddr).transfer(prizesLottery[i] * amount /100);
+                //send fees to creator
+                payable(creator).transfer(feesAmountCreator);
+                //confirm prizes receive
+                confirmedReceives = prizesLottery.length;
+                availableTakeFees = true;
+            }    
+        }else{
+            for (uint i=0;i < prizesRaffle.length;i++ ){
+                //get random number
+                uint _index = random() % participations.length;
+                //get winner by index
+                address winneraddr = participations[_index+i];
+                //push winner to winners array
+                winnersArray.push(winneraddr);
+                //add struct to winners data mapping
+                DataWinners[winneraddr] = Winner(winneraddr,"","",prizesRaffle[i],0,false,true);
+                
+            } 
+        }
+        emit eventcontractData("contractdata",creator,LotteryName,LotteryDescription,miniumAmountParticipate,amount,participationsAmount,lotteryStatus,prizesLottery,prizesRaffle,confirmedReceives,winnersArray);
+
     }
 
-    function winnerAddContactInfo(address addressNFT,int serialNumberNFT) public typePrizesLottery{
-        //CHECK IF HE IS THE OWNER OF THE NFT HE IS ASKING TO CLAIM
+    function random() public view returns (uint) {
+        return uint(keccak256(abi.encode(block.difficulty, block.timestamp, participations)));
+    }
 
+    function winnerAddContactInfo(string memory _email,string memory _socialMedia) public {
+        //CHECK IF HE IS WINNER
+        require(DataWinners[msg.sender].winner == true);
         //ADD CONTACT INFO
+        DataWinners[msg.sender].email = _email;
+        DataWinners[msg.sender].socialMedia = _socialMedia;
+        
     }
 
-    function getPrizesRaffle() public view returns(string[] memory ){
-        return prizesRaffle;
-    }
-    function getPrizesLottery() public view returns(uint[] memory ){
-        return prizesLottery;
+    function receivedPrizepool() public {
+        DataWinners[msg.sender].receivedPrize = true;
+        require(DataWinners[msg.sender].receivedPrize = false);
+        confirmedReceives = confirmedReceives + 1;
+        if(confirmedReceives>prizesRaffle.length){
+            availableTakeFees = true;
+        }
     }
 
     
