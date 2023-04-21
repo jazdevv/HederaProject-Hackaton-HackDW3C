@@ -1,5 +1,6 @@
 import { contractFactory } from "../pages/WalletConnect";
 import { useState } from 'react'
+import { Link } from "react-router-dom";
 function CreatorPanel({data,type,contractid}){
 
     const [initialAmountValue,setaddInitialAmountValue] = useState(0);
@@ -81,9 +82,12 @@ function CreatorPanel({data,type,contractid}){
                             <div className="text-blue-600 text-xl flex gap-2">
                                 <div>winners</div>
                             </div>
-                            <div className="w-56 text-center bg-blue-600 p-2 rounded text-white cursor-pointer">
-                                Watch winners data
-                            </div>
+                            <Link to={`/contractwinners/${contractid}`}>
+                                <div className="w-56 text-center bg-blue-600 p-2 rounded text-white cursor-pointer">
+                                    Watch winners data
+                                </div>
+                            </Link>
+                            
                         </div>
                         pickwinners = <div className="flex flex-col gap-2 justify--between">
                         <div className="text-blue-600 text-xl ">

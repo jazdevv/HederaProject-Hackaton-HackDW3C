@@ -70,11 +70,11 @@ function Header(){
                                 created raffles & lotteries
                             </div>
                         </Link>
-                        <Link to='/wallet/participations'>
+                        {/* <Link to='/wallet/participations'>
                             <div className="w-full flex justify-end hover:bg-gray-400 p-2">
                             participations 
                             </div>
-                        </Link>
+                        </Link> */}
                         <Link >
                             <div className="w-full flex justify-end hover:bg-gray-400 p-2">
                                 logout

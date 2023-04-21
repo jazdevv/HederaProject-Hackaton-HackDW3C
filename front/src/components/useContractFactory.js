@@ -155,7 +155,7 @@ class ContractFactory {
         return contracts.messageOut
     }
 
-    async getWinnerUser(contractId){
+    async getWinnerUser(contractId,walletid){
         const contractid = ContractId.fromSolidityAddress(contractId)
         //web3 instance
         const web3 = new Web3();
@@ -163,19 +163,18 @@ class ContractFactory {
         const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
         //function Name
         let fcnName = 'getWinner';
-        console.log(this.#factoryContractId)
+        
         const transaction = new ContractCallQuery()
             .setContractId(contractid)
             .setGas('100000')
-            .setFunction('getWinner',new ContractFunctionParameters().addAddress('0x00000000000000000000000000000000003D3403'))
+            .setFunction('getWinner',new ContractFunctionParameters().addAddress(walletid))
 
         //NOT WORKING WITH SIGNER    
         // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
         // const signer = this.#hashconnect.getSigner(provider);
         const res = await transaction.execute(client);
         const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abiLotteryRaffle);
-        console.log("emailllllllllllllllllllllllllll",contracts)
-        return contracts
+        return contracts[0]
     }
 
     async getUserContracts(){
@@ -198,6 +197,7 @@ class ContractFactory {
         //NOT WORKING WITH SIGNER    
         // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
         // const signer = this.#hashconnect.getSigner(provider);
+        
         const res = await transaction.execute(client);
         console.log(res)
         
