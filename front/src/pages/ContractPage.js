@@ -6,6 +6,7 @@ import {ContractId,AccountId } from '@hashgraph/sdk'
 import Web3 from "web3";
 import axios from "axios";
 import CreatorPanel from "../components/creatorPanel";
+import WinnerPanel from "../components/winnerPanel";
 const abiFileLotteryRaffle = require('../smartContractData/LotteryRafflesAbi.json')
 
 function ContractPage(){
@@ -218,6 +219,7 @@ function ContractPage(){
             </div> 
         </div>
         <CreatorPanel data={data} type={lotteryType} contractid={contractAddress}/>
+        <WinnerPanel prizesArray={prizes} winnersArray={data.winnersArray} type={lotteryType} amount={data.amount} contractid={contractAddress}/>
         <div className="flex gap-6 flex-col-reverse md:flex-row">
             <div className="flex flex-col gap-6 w-3/5">
                     <div className="bg-gray-900 p-6 w-full">

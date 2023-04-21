@@ -111,6 +111,28 @@ class ContractFactory {
         return await this.#transactionExecute(transaction);
     }
 
+    async confirmPrizeReception(contractId){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setFunction("receivedPrizepool")
+        return await this.#transactionExecute(transaction);
+    }
+
+    async winnerAddContactInfo(contractId,email){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setFunction("winnerAddContactInfo", new ContractFunctionParameters()
+                .addString(email)
+            )
+        return await this.#transactionExecute(transaction);
+    }
+
     async getContracts(){
 
         //web3 instance
@@ -119,7 +141,6 @@ class ContractFactory {
         const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
         //function Name
         let fcnName = 'getContracts';
-        console.log(this.#factoryContractId)
         const transaction = new ContractCallQuery()
             .setContractId(this.#factoryContractId)
             .setGas('100000')
@@ -132,6 +153,29 @@ class ContractFactory {
         console.log(res)
         const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abi);
         return contracts.messageOut
+    }
+
+    async getWinnerUser(contractId){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        //web3 instance
+        const web3 = new Web3();
+        //create client, hashpack signer dont works with ContractCallQuery(), Solve with mirror nodes in future
+        const client = Client.forTestnet().setOperator('0.0.4011011','302e020100300506032b6570042204208d9ddfcb9c80cb6f2181c07b44ebed3bfdadb051eadc80b3f94fcf65d629be5e');
+        //function Name
+        let fcnName = 'getWinner';
+        console.log(this.#factoryContractId)
+        const transaction = new ContractCallQuery()
+            .setContractId(contractid)
+            .setGas('100000')
+            .setFunction('getWinner',new ContractFunctionParameters().addAddress('0x00000000000000000000000000000000003D3403'))
+
+        //NOT WORKING WITH SIGNER    
+        // const provider = this.#hashconnect.getProvider(this.#network,this.#topic,this.#accountId);
+        // const signer = this.#hashconnect.getSigner(provider);
+        const res = await transaction.execute(client);
+        const contracts = this.decodeFunctionResult(fcnName,res.bytes,web3,this.#abiLotteryRaffle);
+        console.log("emailllllllllllllllllllllllllll",contracts)
+        return contracts
     }
 
     async getUserContracts(){
