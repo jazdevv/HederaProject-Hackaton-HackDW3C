@@ -24,6 +24,14 @@ function CreatorPanel({data,type,contractid}){
     let withdrawfeesdata;
     let winnersdata;
     let pickwinners;
+    let withdrawfees = <div className="flex flex-col">
+                            <div className="flex flex-col text-blue-600 text-xl flex gap-2">
+                                <div>withdraw fees to my wallet(at least half participations confirmed required)</div> <div className="text-md text-gray-500">{withdrawfeesdata}</div>
+                            </div>
+                            <div onClick={onClickWithdrawFees} className="w-56 text-center bg-blue-600 p-2 rounded text-white cursor-pointer">
+                                Withdraw fees to my wallet
+                            </div>
+                        </div>;
     if(type=='lottery'){
         addinitialamount = <div className="flex flex-col gap-2">
             <div className="text-blue-600 text-xl ">
@@ -46,16 +54,25 @@ function CreatorPanel({data,type,contractid}){
             <div onClick={onClickChooseWinner} className="bg-blue-600 p-2 rounded text-white cursor-pointer text-cl">
                 Pick Winners and finish {type}
             </div>
-            <div className="bg-red-500 text-white text-sm w-56">
-            sometimes can give an error pick winners, please try again and be aware there are more partipations than total prizes
-            </div>
-        </div>   
+            <div className="bg-gray-500 text-white text-sm w-56 p-2">
+            Please note that there should be a minimum of twice as many participants as there are total prizes available. This means that the number of entries must be at least double the number of prizes.            </div>
+        </div> 
+        withdrawfeesdata = "% of fees you set when creation"  
         if(data.status=="finished"){
             addinitialamount = <></>
             pickwinners = <></>
+            withdrawfees = <div className="flex flex-col">
+                                <div className="flex flex-col text-blue-600 text-xl flex gap-2">
+                                    <div>{withdrawfeesdata}</div>
+                                </div>
+                                <div className="w-56 text-center bg-gray-600 p-2 rounded text-black cursor-pointer">
+                                    Withdraw fees to my wallet
+                                </div>
+                            </div>;
+            withdrawfeesdata = "your fees amount got sended automatically to your wallet"
         }
         
-        withdrawfeesdata = "% of fees you set when creation"
+        
         winnersdata = <></>
     }else{
         addinitialamount = <></>
@@ -75,10 +92,13 @@ function CreatorPanel({data,type,contractid}){
                         <div onClick={onClickChooseWinner} className="bg-blue-600 p-2 rounded text-white cursor-pointer text-cl">
                             Pick Winners and finish {type}
                         </div>
-                        <div className="bg-red-500 text-white text-sm w-56">
-                        sometimes can give an error pick winners, please try again and be aware there are more partipations than total prizes
-                        </div>
-                    </div>   
+                        <div className="p-2 bg-gray-500 text-white text-sm w-56">
+                        Please note that there should be a minimum of twice as many participants as there are total prizes available. This means that the number of entries must be at least double the number of prizes.                        </div>
+                    </div>  
+        if(data.status=="finished"){
+            addinitialamount = <></>
+            pickwinners = <></>
+        } 
     }
 
 
@@ -92,14 +112,7 @@ function CreatorPanel({data,type,contractid}){
             {pickwinners} 
             {addinitialamount}
             {winnersdata}
-            <div className="flex flex-col">
-                <div className="flex flex-col text-blue-600 text-xl flex gap-2">
-                    <div>withdraw fees to my wallet</div> <div className="text-md text-gray-500">{withdrawfeesdata}</div>
-                </div>
-                <div onClick={onClickWithdrawFees} className="w-56 text-center bg-blue-600 p-2 rounded text-white cursor-pointer">
-                    Withdraw fees to my wallet
-                </div>
-            </div>
+            {withdrawfees}
             
         </div>   
    </div> 
