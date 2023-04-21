@@ -75,6 +75,41 @@ class ContractFactory {
             .setFunction("joinLottery")
         return await this.#transactionExecute(transaction);
     }
+    async addInitialAmount(contractId,amount){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        let send_amount;
+        if(amount == 0){
+            send_amount = 1
+        }else{
+            send_amount = amount
+        }
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setPayableAmount(send_amount)
+            .setFunction("addInitialAmount")
+        return await this.#transactionExecute(transaction);
+    }
+
+    async withdrawCreatorFees(contractId){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setFunction("sendFeesToCreator")
+        return await this.#transactionExecute(transaction);
+    }
+
+    async contractChooseWinner(contractId){
+        const contractid = ContractId.fromSolidityAddress(contractId)
+        
+        const transaction = new ContractExecuteTransaction()
+            .setContractId(contractid)
+            .setGas(1000000)
+            .setFunction("chooseWinner")
+        return await this.#transactionExecute(transaction);
+    }
 
     async getContracts(){
 
